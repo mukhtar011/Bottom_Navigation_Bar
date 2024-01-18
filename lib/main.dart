@@ -1,27 +1,82 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'LoginPage.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter',
       theme: ThemeData(
 
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Bottom Navigation Bar'),
+      home: SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
+class SplashScreen extends StatefulWidget {
+  @override
+  State<SplashScreen> createState() => SplashScreenState();
+  }
+class SplashScreenState extends State<SplashScreen> {
+static const String KEYLOGIN = 'Login';
+  @override
+  void initState() {
+    super.initState();
+    whereToGo();
+
+    }
+  void whereToGo() async {
+    var sharedpref = await SharedPreferences.getInstance();
+    var isLoggedIn = sharedpref.getBool(SplashScreenState.KEYLOGIN);
+
+ Timer(
+   Duration(seconds: 3),(){
+     if(isLoggedIn != null){
+       if(isLoggedIn){
+         Navigator.pushReplacement(context,
+             MaterialPageRoute(builder: (context) => MyHomePage(title: 'My Home',)),);
+       } else {
+         Navigator.pushReplacement(context,
+             MaterialPageRoute(builder: (context) => LoginPage()),);
+       }
+     } else {
+       Navigator.pushReplacement(context,
+           MaterialPageRoute(builder: (context) => LoginPage()),);
+     }
+ }
+ );
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        color: Colors.blue,
+        child: Center(
+          child: Text('Welcome to Flutter', style: TextStyle(
+            fontWeight: FontWeight.w500,fontSize: 40,
+
+          ),
+          ),
+        ),
+      )
+    );
+    }
+  }
+
+
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -84,7 +139,15 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
 
-      )
+      ),
+        floatingActionButton: FloatingActionButton(
+        onPressed: (){
+      Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (context) => LoginPage()),);
+    },
+     tooltip: 'LogOut',
+     child: Icon(Icons.exit_to_app),
+     ),
     );
   }
 }
